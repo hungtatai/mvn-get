@@ -60,6 +60,7 @@ class CommandLine < Thor
         x.download
       }
     end
+    puts "Complete!"
   end
 end
 

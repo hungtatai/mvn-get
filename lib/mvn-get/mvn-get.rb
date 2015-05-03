@@ -13,7 +13,7 @@ module MavenCentral
   module_function
 
   def version
-    "0.0.2"
+    "0.0.3"
   end
 
   def extract_url_from_dict(d, filetype="pom")
@@ -50,8 +50,6 @@ module MavenCentral
       "#{MAVEN_CENTRAL_SEARCH}?q=#{keyword}&wt=json"
     end
 
-    # puts url
-
     result = {}
     body = JSON.parse(MavenCentral.request(url))
     result["candidates"] = body["response"]["docs"].map{|x| x["id"] }
@@ -81,7 +79,7 @@ class MavenCentralRepo
 
     @id = id
     d = MavenCentral.id2dict(@id)
-    raise "not a correct id.\n please use 'groupId:artifactId' or 'groupId:artifactId:version'" if d.nil?
+    raise "not a correct id. please use 'groupId:artifactId' or 'groupId:artifactId:version'" if d.nil?
 
     # use lastest version by default
     if d["version"] == nil || d["version"].strip == ""
@@ -92,22 +90,15 @@ class MavenCentralRepo
     @groupId, @artifactId, @version = d["groupId"], d["artifactId"], d["version"]
 
     pom_url = MavenCentral.extract_url_from_dict(d)
-    # puts pom_url
-
     body = MavenCentral.request(pom_url)
     @pom = Hash.from_xml( body )
   end
-
-  # def dependencies_url
-  #   dependencies.map{|x| MavenCentral.extract_url_from_id(x, "pom") }
-  # end
 
   def dependencies(ignore_test_lib = true)
     return [] if @pom["project"]["dependencies"].nil? or
       (@pom["project"]["dependencies"].class == String and @pom["project"]["dependencies"].strip == "")
     [@pom["project"]["dependencies"]["dependency"]].flatten.map{|x| 
       next if ignore_test_lib and x["scope"] and x["scope"].strip == "test"
-      # puts "dep #{@id}\n#{x}"
       if x["version"] =~ /\s*[$]{\s*project[.]version\s*}\s*/
         x["version"] = @version
       end
@@ -128,7 +119,6 @@ class MavenCentralRepo
     deps = dependencies(ignore_test_lib)
     while not deps.empty?
       d = deps.shift
-      # puts "deps #{d}"
       if not res.map{|x| x.id }.include?(d)
         r = MavenCentralRepo.new(d)
         if not res.include?(r)
@@ -144,21 +134,15 @@ class MavenCentralRepo
       end
     end
 
-    # if only_select_lastest_version
-    #   res = res.group_by{|x| "#{x.groupId}:#{x.artifactId}" }.map{|k, v| v.reduce{|s, x| if s.version > x.version then s else x end } }.flatten
-    # end
+    if only_select_lastest_version
+      res = res.group_by{|x| "#{x.groupId}:#{x.artifactId}" }.map{|k, v| v.reduce{|s, x| if s.version <=> x.version then x else s end } }.flatten
+    end
 
     res.sort!
     @_recursive_dependencies ||= {}
     @_recursive_dependencies[ignore_test_lib] ||= {}
     @_recursive_dependencies[ignore_test_lib][only_select_lastest_version] = res
     return res
-    # dependencies.map{|x| 
-    #   repo = MavenCentralRepo.new(x)
-    #   puts "--- #{@id} ---"
-    #   puts repo.dependencies
-    #   [repo, repo.recursive_dependencies]
-    # }.flatten
   end
 
   def inspect
@@ -182,25 +166,8 @@ class MavenCentralRepo
 
 end
 
-# id = "org.mockito:mockito-core:2.0.7-beta"
-
-# id = "com.mashape.unirest:unirest-java:1.4.5"
+# id = 'com.mashape.unirest:unirest-java:1.4.5'
 # r = MavenCentralRepo.new(id)
-# r.recursive_dependencies.each {|x| x.download }
-# puts r.dependencies
-
-# puts MavenCentral.search("org.technbolts:junit:1.0.1")
-
-
-
-# puts r.recursive_dependencies
-# puts r.dependencies_url
-# puts r.dependencies
-
-
-
-# require 'irb'
-# IRB.start
 
 
 
