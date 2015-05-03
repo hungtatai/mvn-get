@@ -2,9 +2,11 @@
 
 mvn-get is a java toolkit for quickly checking and setting up library dependencies.
 
+You can easily setup your prototype project or jsp project 's library dependencies **without .pom/.gradle file**.
+
 ## Installation
 
-  $ gem install mvn-get
+`gem install mvn-get`
 
 ## Usage
 
