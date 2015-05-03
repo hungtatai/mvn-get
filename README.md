@@ -1,18 +1,8 @@
-# Mvn::Get
+# mvn-get
 
-TODO: Write a gem description
+mvn-get is a java toolkit for quickly checking and setting up library dependencies.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'mvn-get'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install mvn-get
 
@@ -22,7 +12,7 @@ TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/mvn-get/fork )
+1. Fork it ( https://github.com/HondaDai/mvn-get/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
