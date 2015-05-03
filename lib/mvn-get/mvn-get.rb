@@ -13,7 +13,7 @@ module MavenCentral
   module_function
 
   def version
-    0.0.1
+    "0.0.1"
   end
 
   def extract_url_from_dict(d, filetype="pom")
