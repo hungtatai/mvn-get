@@ -44,6 +44,23 @@ end
 
 class CommandLine < Thor
 
+  desc "search LIBRARY_NAME", "search library call LIBRARY_NAME"
+  def search(lib_name)
+    search_result = MavenCentral.search(lib_name)
+    if search_result["candidates"].size > 0
+      puts "Candidates:"
+      search_result["candidates"].each {|x| puts "\t#{x}"}
+    else
+      puts "No available library call #{lib_name}"
+    end
+
+    if search_result["suggestions"].size > 0
+      print "\nOr... " if search_result["candidates"].size > 0
+      puts "Did you mean:"
+      search_result["suggestions"].each {|x| puts "\t#{x}"}
+    end
+  end
+
   desc "deps LIBRARY_NAME", "check dependencies of LIBRARY_NAME"
   def deps(lib_name)
     repo = check_dependencies(lib_name)
